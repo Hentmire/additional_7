@@ -1,8 +1,36 @@
 module.exports = function solveSudoku(matrix) {
-  const arrayForValues = {};
+const arrayForValues = {};
 const valueArray = {};
+
+let checkExist = function(checkValue, checkRow, checkCol) {
+				let existNumber = false;
+				for (colI = 0; colI < 9; colI++) {
+					if (checkValue == matrix[checkRow][colI]) {
+						existNumber = true;
+					}
+				}
+				for (rowI = 0; rowI < 9; rowI++) {
+					if (checkValue == matrix[rowI][checkCol]) {
+						existNumber = true;
+					}
+				}
+				
+				
+				let rowSquare = Math.floor(checkRow / 3);
+				let colSquare = Math.floor(checkCol / 3);
+				const options = [];
+				for (let rowSqN = rowSquare*3; rowSqN < ( (rowSquare + 1) * 3 ); rowSqN++){ //перебор вариантов по квадрату 3*3
+					for (let colSqN = colSquare*3; colSqN < ( (colSquare + 1) * 3 ); colSqN++) {
+						if (checkValue == matrix[rowSqN][colSqN]) {
+							existNumber = true;
+						}
+					}
+				}
+				return existNumber;
+}
+
 let i = 0;
-while (i < 5) {
+while (i < 100) {
 	for (let rowNumber = 0; rowNumber < 9; rowNumber++) { //поиск одиночек
 		for (let colNumber = 0; colNumber < 9; colNumber++) {
 			const block = [1, 2, 3, 4, 5, 6, 7, 8, 9]; 
@@ -52,6 +80,7 @@ while (i < 5) {
 	} i++;
 }
 
+//************************************************************************************************
 //поиск скрытых очиночек
 	for (let rowNumber = 0; rowNumber < 9; rowNumber++) { // поиск по строке
 		const array = [0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -104,15 +133,10 @@ while (i < 5) {
 				for(let j = 0; j < array[i].length; j++) {
 					let counter = 0;
 					let a = array[i][j];
-					let existNumber = false;
-					for (let rowN = 0; rowN < 9; rowN++) { //проверка, существует ли число а в строке
-						if (a == matrix[rowN][colNumber]) {
-							existNumber = true;
-						}
-					}
-					if (existNumber === true) {
+					if (checkExist(a, i, colNumber) === true) {
 						continue;
 					}
+
 					for (let m = 0; m < 9; m++) {
 						if (array[m] !== 0 && m !== i) {
 							for (let k = 0; k < array[m].length; k++){
@@ -155,15 +179,8 @@ while (i < 5) {
 				for(let j = 0; j < array[i].length; j++) {
 					let counter = 0;
 					let a = array[i][j];
-					let existNumber = false;
-					for (let rowNumber = n*3; rowNumber < ( (n + 1) * 3); rowNumber++) {
-						for (let colNumber = l*3; colNumber < ( (l + 1) * 3); colNumber++) {
-							if (a === matrix[rowNumber][colNumber]){
-								existNumber = true;
-							}
-						}
-					}
-					if (existNumber === true) {
+					
+					if (checkExist(a, n*3, l*3) === true) {
 						continue;
 					}
 					
@@ -193,22 +210,20 @@ while (i < 5) {
 	}
 	n++;
 }
+//************************************************************************************************
 for (let rowIndex = 0; rowIndex < 9; rowIndex++) { //подстановка возможного числа в судоку
 	for (let colIndex = 0; colIndex < 9; colIndex++) {
 		if (matrix[rowIndex][colIndex] === 0) {
 			let p = arrayForValues[ [rowIndex,colIndex] ];
 			for (let j = 0; j < p.length; j++) {
-				let existNumber = false;
-				for (colI = 0; colI < 9; colI++) {
-					if (p[1] == matrix[rowIndex][colI]) {
-						existNumber = true;
-					}
-				}
-				if (existNumber === true) {
+
+				if ( checkExist(p[j], rowIndex, colIndex) === true) {
 					continue;
 				}
+
 				const clone = matrix.slice(0);
-				clone[rowIndex][colIndex] = p[1];
+				clone[rowIndex][colIndex] = p[j];
+
 				let z = 0;
 				while (z < 5) {
 					for (let rowNumber = 0; rowNumber < 9; rowNumber++) { //поиск одиночек
@@ -280,6 +295,9 @@ for (let rowIndex = 0; rowIndex < 9; rowIndex++) { //подстановка во
 								for(let j = 0; j < array[i].length; j++) {
 									let counter = 0;
 									let a = array[i][j];
+									if (checkExist(a, rowNumber, i) === true) {
+										continue;
+									}
 									for (let m = 0; m < 9; m++) {
 										if (array[m] !== 0 && m !== i) {
 											for (let k = 0; k < array[m].length; k++){
@@ -316,13 +334,7 @@ for (let rowIndex = 0; rowIndex < 9; rowIndex++) { //подстановка во
 								for(let j = 0; j < array[i].length; j++) {
 									let counter = 0;
 									let a = array[i][j];
-									let existNumber = false;
-									for (let rowN = 0; rowN < 9; rowN++) { //проверка, существует ли число а в строке
-										if (a == clone[rowN][colNumber]) {
-											existNumber = true;
-										}
-									}
-									if (existNumber === true) {
+									if (checkExist(a, i, colNumber) === true) {
 										continue;
 									}
 									for (let m = 0; m < 9; m++) {
@@ -367,15 +379,7 @@ for (let rowIndex = 0; rowIndex < 9; rowIndex++) { //подстановка во
 								for(let j = 0; j < array[i].length; j++) {
 									let counter = 0;
 									let a = array[i][j];
-									let existNumber = false;
-									for (let rowNumber = n*3; rowNumber < ( (n + 1) * 3); rowNumber++) {
-										for (let colNumber = l*3; colNumber < ( (l + 1) * 3); colNumber++) {
-											if (a === matrix[rowNumber][colNumber]){
-												existNumber = true;
-											}
-										}
-									}
-									if (existNumber === true) {
+									if (checkExist(a, n*3, l*3) === true) {
 										continue;
 									}
 									
@@ -419,11 +423,9 @@ for (let rowIndex = 0; rowIndex < 9; rowIndex++) { //подстановка во
 				if (count === 0) {
 					break;
 				}
-
 			}
 		}
 	}
-}
-
+} 
   return matrix;
 }
