@@ -133,6 +133,7 @@ while (i < 100) {
 				for(let j = 0; j < array[i].length; j++) {
 					let counter = 0;
 					let a = array[i][j];
+					
 					if (checkExist(a, i, colNumber) === true) {
 						continue;
 					}
@@ -211,19 +212,21 @@ while (i < 100) {
 	n++;
 }
 //************************************************************************************************
+
 for (let rowIndex = 0; rowIndex < 9; rowIndex++) { //подстановка возможного числа в судоку
 	for (let colIndex = 0; colIndex < 9; colIndex++) {
 		if (matrix[rowIndex][colIndex] === 0) {
-			let p = arrayForValues[ [rowIndex,colIndex] ];
-			for (let j = 0; j < p.length; j++) {
+			let random = arrayForValues[ [rowIndex,colIndex] ];
 
-				if ( checkExist(p[j], rowIndex, colIndex) === true) {
+		let substituteRandomNumber = function(rowX,colX) {
+			for (let j = 0; j < random.length; j++) {
+
+								if ( checkExist(random[j], rowX, colX) === true) {
 					continue;
 				}
 
 				const clone = matrix.slice(0);
-				clone[rowIndex][colIndex] = p[j];
-
+				clone[rowX][colX] = random[j];
 				let z = 0;
 				while (z < 5) {
 					for (let rowNumber = 0; rowNumber < 9; rowNumber++) { //поиск одиночек
@@ -416,6 +419,7 @@ for (let rowIndex = 0; rowIndex < 9; rowIndex++) { //подстановка во
 				for (let rowN = 0; rowN < 9; rowN++) {
 					for (let colN = 0; colN < 9; colN++) {
 						if (clone[rowN][colN] === 0) {
+							substituteRandomNumber(rowN, colN);
 							count++;
 						}
 					}
@@ -424,8 +428,11 @@ for (let rowIndex = 0; rowIndex < 9; rowIndex++) { //подстановка во
 					break;
 				}
 			}
+
 		}
+		substituteRandomNumber(rowIndex, colIndex);
 	}
 } 
+}
   return matrix;
 }
